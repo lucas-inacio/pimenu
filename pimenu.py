@@ -6,6 +6,7 @@ from tkinter import Tk, Frame, Button, PhotoImage, Text, constants as TkC, INSER
 from math import sqrt, floor, ceil
 from queue import Queue, Empty
 
+from yaml import Loader
 import yaml
 
 def enqueue_ouput(out, q):
@@ -69,7 +70,7 @@ class PiMenu(Frame):
         :return: None
         """
         with open(self.path + '/pimenu.yaml', 'r') as f:
-            doc = yaml.load(f)
+            doc = yaml.load(f, Loader=Loader)
         self.lastinit = os.path.getmtime(self.path + '/pimenu.yaml')
 
         if len(self.framestack):
