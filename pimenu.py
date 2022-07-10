@@ -1,6 +1,3 @@
-#!/usr/bin/python2
-# -*- coding: utf-8 -*-
-from faulthandler import disable
 import os
 import subprocess
 import sys
