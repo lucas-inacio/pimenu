@@ -1,10 +1,10 @@
 #!/usr/bin/python2
 # -*- coding: utf-8 -*-
-import Tkconstants as TkC
 import os
 import subprocess
 import sys
-from Tkinter import Tk, Frame, Button, Label, PhotoImage
+from tkinter import constants as TkC
+from tkinter import Tk, Frame, Button, Label, PhotoImage
 from math import sqrt, floor, ceil
 
 import yaml
