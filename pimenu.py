@@ -10,7 +10,7 @@ from yaml import Loader
 import yaml
 
 def enqueue_ouput(out, q):
-    for line in iter(out.readline, b''):
+    for line in iter(out.readline, ''):
         if not line:
             break
         q.put(line)
