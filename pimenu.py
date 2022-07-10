@@ -242,7 +242,6 @@ class PiMenu(Frame):
             while p.poll() == None:
                 try:
                     line = q.get_nowait()
-                    print(line, end='')
                     text.insert(INSERT, line)
                     self.parent.update()
                 except Empty:
