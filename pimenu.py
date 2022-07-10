@@ -1,14 +1,30 @@
 #!/usr/bin/python2
 # -*- coding: utf-8 -*-
+from faulthandler import disable
 import os
 import subprocess
 import sys
-from tkinter import constants as TkC
-from tkinter import Tk, Frame, Button, Label, PhotoImage
+import threading
+from tkinter import Tk, Frame, Button, PhotoImage, Text, constants as TkC, INSERT, messagebox
 from math import sqrt, floor, ceil
+from queue import Queue, Empty
 
 import yaml
 
+def enqueue_ouput(out, q):
+    for line in iter(out.readline, b''):
+        if not line:
+            break
+        q.put(line)
+    out.close()
+
+def run_sub(args):
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True) # line buffered
+    q = Queue()
+    t = threading.Thread(target=enqueue_ouput, args=(p.stdout, q))
+    t.daemon = True
+    t.start()
+    return p, q
 
 class FlatButton(Button):
     def __init__(self, master=None, cnf=None, **kw):
@@ -139,7 +155,10 @@ class PiMenu(Frame):
                 btn.set_color("#2b5797")  # dark-blue
             else:
                 # this is an action
-                btn.configure(command=lambda act=act: self.go_action(act), )
+                if 'command' in item:
+                    # btn.configure(command=lambda act=act: self.go_action(act), )
+                    # btn.configure(command=lambda args=item['command'].split(): run_sub(args))
+                    btn.configure(command=lambda args=item['command'].split(): self.go_action(args))
 
             if 'color' in item:
                 btn.set_color(item['color'])
@@ -203,7 +222,7 @@ class PiMenu(Frame):
         while len(self.framestack) > 1:
             self.destroy_top()
 
-    def go_action(self, actions):
+    def go_action(self, args):
         """
         execute the action script
         :param actions:
@@ -213,12 +232,24 @@ class PiMenu(Frame):
         self.hide_top()
         delay = Frame(self, bg="#2d89ef")
         delay.pack(fill=TkC.BOTH, expand=1)
-        label = Label(delay, text="Executing...", fg="white", bg="#2d89ef", font="Sans 30")
-        label.pack(fill=TkC.BOTH, expand=1)
+        text = Text(delay, fg='white', bg='#2d89ef', font="Sans 10")
+        text.bind('<Key>', lambda e: None) # Prevent editing
+        text.pack(fill=TkC.BOTH, expand=1)
         self.parent.update()
 
-        # excute shell script
-        subprocess.call([self.path + '/pimenu.sh'] + actions)
+        try:
+            p, q = run_sub(args)
+            while p.poll() == None:
+                try:
+                    line = q.get_nowait()
+                    print(line, end='')
+                    text.insert(INSERT, line)
+                    self.parent.update()
+                except Empty:
+                    pass
+            messagebox.showinfo('Status', 'Processo encerrado')
+        except OSError as e:
+            messagebox.showerror(e)
 
         # remove delay screen and show menu again
         delay.destroy()
@@ -240,7 +271,7 @@ class PiMenu(Frame):
 
 def main():
     root = Tk()
-    root.geometry("320x240")
+    root.geometry("480x320")
     root.wm_title('PiMenu')
     if len(sys.argv) > 1 and sys.argv[1] == 'fs':
         root.wm_attributes('-fullscreen', True)
