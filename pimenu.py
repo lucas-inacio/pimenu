@@ -230,13 +230,31 @@ class PiMenu(Frame):
         self.hide_top()
         delay = Frame(self, bg="#2d89ef")
         delay.pack(fill=TkC.BOTH, expand=1)
+        delay.rowconfigure(0, weight=2)
+        delay.rowconfigure(1, weight=1)
+        delay.columnconfigure(0, weight=1)
+
         text = Text(delay, fg='white', bg='#2d89ef', font="Sans 10")
         text.bind('<Key>', lambda e: None) # Prevent editing
-        text.pack(fill=TkC.BOTH, expand=1)
-        self.parent.update()
+        text.grid(
+            row=0,
+            column=0,
+            padx=1,
+            pady=1,
+            sticky=TkC.NS+TkC.EW
+        )
 
         try:
             p, q = run_sub(args)
+            button = FlatButton(delay, text='Encerrar', font='Sans 20', command=lambda : p.terminate())
+            button.set_color('#333333')
+            button.grid(
+                row=1,
+                column=0,
+                padx=1,
+                pady=1,
+                sticky=TkC.NS+TkC.EW
+            )
             while p.poll() == None:
                 try:
                     line = q.get_nowait()
