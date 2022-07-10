@@ -255,6 +255,7 @@ class PiMenu(Frame):
                 pady=1,
                 sticky=TkC.NS+TkC.EW
             )
+            self.parent.update()
             while p.poll() == None:
                 try:
                     line = q.get_nowait()
