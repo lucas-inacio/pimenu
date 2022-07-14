@@ -9,6 +9,9 @@ from queue import Queue, Empty
 from yaml import Loader
 import yaml
 
+import argparse
+import re
+
 def enqueue_ouput(out, q):
     for line in iter(out.readline, ''):
         if not line:
@@ -154,9 +157,18 @@ class PiMenu(Frame):
             else:
                 # this is an action
                 if 'command' in item:
-                    # btn.configure(command=lambda act=act: self.go_action(act), )
-                    # btn.configure(command=lambda args=item['command'].split(): run_sub(args))
-                    btn.configure(command=lambda args=item['command'].split(): self.go_action(args))
+                    # Handle paths with spaces
+                    command = item['command'].split()
+                    if command.count('"') % 2 != 0:
+                        raise ValueError('Invalid pimenu.yaml')
+                    final_args = []
+                    for arg in item['command'].split():
+                        if arg[-1] == '"':
+                            final_args[-1] = final_args[-1] + ' ' + arg.replace('"', '')
+                        else:
+                            final_args.append(arg.replace('"', ''))
+
+                    btn.configure(command=lambda args=final_args: self.go_action(args))
 
             if 'color' in item:
                 btn.set_color(item['color'])
@@ -301,3 +313,20 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # # print(' '.join(sys.argv[1:]))
+    # # print(sys.orig_argv)
+    # # print(sys.argv)
+    # parser = argparse.ArgumentParser('teste', 'usage', 'description')
+    # parser.add_argument('str')
+    # parser.add_argument('path')
+    # # args = parser.parse_args(['teste', '"C:\\Users\\lucas\\OneDrive\\Python', 'Scripts\\show_dvr.py"'])
+
+    # text = "python 'C:/Users/lucas/OneDrive/Python Scripts/show_dvr.py'"
+    # items = []
+    # for i in text:
+
+    #     print(i)
+
+    # # re.match('', ' '.join(sys.argv[1:]))
+    # print(os.fsdecode(' '.join(sys.argv[1:])))
+    # # print(args)
