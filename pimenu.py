@@ -291,8 +291,12 @@ def main():
     root.wm_title('PiMenu')
     if len(sys.argv) > 1 and sys.argv[1] == 'fs':
         root.wm_attributes('-fullscreen', True)
-    PiMenu(root)
-    root.mainloop()
+
+    try:
+        PiMenu(root)
+        root.mainloop()
+    except FileNotFoundError:
+        messagebox.showerror('Error!', 'Missing pimenu.yaml')
 
 
 if __name__ == '__main__':
