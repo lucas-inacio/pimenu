@@ -9,9 +9,6 @@ from queue import Queue, Empty
 from yaml import Loader
 import yaml
 
-import argparse
-import re
-
 def enqueue_ouput(out, q):
     for line in iter(out.readline, ''):
         if not line:
@@ -315,20 +312,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # # print(' '.join(sys.argv[1:]))
-    # # print(sys.orig_argv)
-    # # print(sys.argv)
-    # parser = argparse.ArgumentParser('teste', 'usage', 'description')
-    # parser.add_argument('str')
-    # parser.add_argument('path')
-    # # args = parser.parse_args(['teste', '"C:\\Users\\lucas\\OneDrive\\Python', 'Scripts\\show_dvr.py"'])
-
-    # text = "python 'C:/Users/lucas/OneDrive/Python Scripts/show_dvr.py'"
-    # items = []
-    # for i in text:
-
-    #     print(i)
-
-    # # re.match('', ' '.join(sys.argv[1:]))
-    # print(os.fsdecode(' '.join(sys.argv[1:])))
-    # # print(args)
