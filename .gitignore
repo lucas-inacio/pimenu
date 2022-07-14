@@ -1,2 +1,5 @@
 pimenu.sh
 pimenu.yaml
+build
+dist
+*.spec
