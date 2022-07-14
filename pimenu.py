@@ -20,7 +20,9 @@ def enqueue_ouput(out, q):
     out.close()
 
 def run_sub(args):
-    p = subprocess.Popen(args, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True) # line buffered
+    startupInfo = subprocess.STARTUPINFO()
+    startupInfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, startupinfo=startupInfo) # line buffered
     q = Queue()
     t = threading.Thread(target=enqueue_ouput, args=(p.stdout, q))
     t.daemon = True
